@@ -1,0 +1,805 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+	Name
+{% endblock %}
+
+{% block body %}
+
+<style>
+.image-input{
+	position: relative;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;	
+	overflow: hidden;	
+} 
+.image-input img{
+	position: relative;
+	height: 100%;
+	width: 250px;
+	object-fit: cover;
+	border-radius: 20px;
+	box-shadow: 0 5px 5px rgba(0, 0, 0, .25);
+	z-index: 100;
+}
+.image-input label {
+	background: #eceff1;
+	padding: 15px;
+	border-radius: 30px;
+}
+
+/* Proceed button */
+.unsub-button {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 30px;
+  background: none;
+  border: 0;
+  color: #222;
+  display: block;
+  font-family: "Quicksand", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  height: 40px;
+  outline: none;
+  padding-right: 32px;
+  position: relative;
+  width: 160px;
+  -webkit-tap-highlight-color: transparent;
+}
+.unsub-button.ready {
+  cursor: pointer;
+}
+.unsub-button.clicked::before {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  height: 32px;
+  width: 128px;
+}
+.unsub-button.clicked .unsub-button__icon {
+  opacity: 0;
+  transform: translate(-150%, -50%) scale(0);
+}
+.unsub-button.clicked .unsub-button__default-text {
+  opacity: 0;
+  transform: translate(10%, 0%) scale(0);
+}
+.unsub-button.clicked .unsub-button__confirm-text .word {
+  opacity: 1;
+  top: 0;
+}
+.unsub-button.clicked .unsub-button__confirm-text .char {
+  animation-name: bounce;
+}
+.unsub-button.show-instructions .unsub-button__confirm-text {
+  opacity: 0;
+}
+.unsub-button.show-instructions .unsub-button__instruction-text {
+  opacity: 1;
+  top: 110%;
+}
+.unsub-button.show-instructions .unsub-button__kid {
+  pointer-events: auto;
+}
+.unsub-button.show-instructions .unsub-button__kid-wrapper {
+  transform: translate(0px, 20px) rotate(0);
+}
+.unsub-button.show-instructions .target {
+  cursor: pointer;
+}
+.unsub-button.show-instructions.happy .happy {
+  opacity: 1;
+}
+.unsub-button.show-instructions.worried .worried {
+  opacity: 1;
+}
+.unsub-button.show-instructions.sad::after {
+  color: #222;
+  opacity: 1;
+  transition: opacity 600ms linear 400ms, color 400ms linear 1400ms;
+}
+.unsub-button.show-instructions.sad .sad {
+  opacity: 1;
+}
+.unsub-button::before {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.05);
+  content: "";
+  display: block;
+  height: 100%;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 300ms ease-in-out, height 300ms ease-in-out, box-shadow 300ms linear;
+  width: 100%;
+  z-index: 1;
+}
+.unsub-button::after {
+  align-items: center;
+  background: #fff;
+  color: #fff;
+  content: "How could you...";
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  left: 50%;
+  min-width: 300px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 600ms linear 2000ms, color 600ms linear 1400ms;
+  width: 33.34vw;
+  z-index: 10;
+}
+.unsub-button__default-text {
+  display: block;
+  opacity: 1;
+  position: relative;
+  transform: none;
+  transition: opacity 200ms linear, transform 200ms ease;
+  z-index: 3;
+}
+.unsub-button__icon {
+  fill: none;
+  stroke: #222;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1;
+  opacity: 1;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translate(0, -50%);
+  transition: opacity 200ms linear, transform 200ms ease;
+  width: 24px;
+  z-index: 2;
+}
+.unsub-button__icon .cancel-color {
+  stroke: #ff6161;
+}
+.unsub-button__confirm-text {
+  left: 50%;
+  opacity: 1;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 200ms linear;
+  white-space: nowrap;
+  color: #616161;
+  z-index: 3;
+}
+.unsub-button__confirm-text .word {
+  margin-right: 5px;
+  opacity: 0;
+  position: relative;
+  top: -5px;
+  transition: opacity 400ms linear var(--word-delay), top 400ms linear var(--word-delay);
+}
+.unsub-button__confirm-text .word--bold {
+  color: #ff6161;
+  margin: 0;
+  transition: opacity 400ms linear var(--word-delay);
+  white-space: nowrap;
+}
+.unsub-button__confirm-text .word .char {
+  --bounceHeight: -5px;
+  animation-duration: 400ms;
+  animation-direction: alternate;
+  animation-delay: var(--char-delay);
+  animation-iteration-count: 2;
+  display: inline-block;
+}
+.unsub-button__instruction-text {
+  color: #fff;
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 100%;
+  transform: translate(-50%, 0%);
+  transition: top 500ms ease 700ms, opacity 300ms linear 700ms;
+  white-space: nowrap;
+  z-index: 3;
+}
+.unsub-button__kid {
+  bottom: 4px;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, 0%);
+  width: 150px;
+  z-index: 5;
+}
+.unsub-button__kid-wrapper {
+  transform: translate(0%, 100%) rotate(20deg);
+  transform-origin: 50% 100%;
+  transition: transform 600ms cubic-bezier(0.6, 1.45, 0.75, 1);
+}
+.unsub-button__kid .happy,
+.unsub-button__kid .worried,
+.unsub-button__kid .sad {
+  opacity: 0;
+}
+.unsub-button--balloon.show-instructions .unsub-button__balloon-wrapper {
+  transform: translate(0, 20px);
+}
+.unsub-button--balloon.show-instructions .unsub-button__balloon-wrapper-inner {
+  animation-name: balloonRock;
+}
+.unsub-button--balloon.show-instructions.sad .balloonPopMask {
+  opacity: 1;
+  transform: scale(1);
+}
+.unsub-button--balloon.show-instructions.sad .balloonPopPiece {
+  opacity: 1;
+}
+.unsub-button--balloon.show-instructions.sad .balloonPopPiece--string {
+  transform: scaleY(0.6);
+  transform-origin: 60% 80%;
+}
+.unsub-button--balloon.show-instructions.sad .balloonPopPiece--1 {
+  transform: translate(35px, -25px);
+}
+.unsub-button--balloon.show-instructions.sad .balloonPopPiece--2 {
+  transform: translate(-40px, -10px);
+}
+.unsub-button--balloon.show-instructions.sad .balloonPopPiece--3 {
+  transform: translate(50px, 10px);
+}
+.unsub-button--balloon .unsub-button__kid .balloonPopMask {
+  opacity: 0;
+  transform: scale(0);
+  transform-origin: 188px 86px;
+  transition: transform 150ms linear;
+}
+.unsub-button--balloon .unsub-button__kid .balloonPopPiece {
+  opacity: 0;
+  transition: transform 1200ms ease-out, opacity 100ms linear;
+}
+.unsub-button--balloon .unsub-button__balloon-wrapper {
+  transform: translate(0%, 100%);
+  transform-origin: 50% 100%;
+  transition: transform 800ms ease-in;
+}
+.unsub-button--balloon .unsub-button__balloon-wrapper-inner {
+  animation-delay: 700ms;
+  animation-duration: 2000ms;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+  transform: rotate(8deg);
+  transform-origin: 60% 80%;
+}
+.unsub-button--ice-cream::after {
+  content: "Please wait,working on it...";
+}
+.unsub-button--ice-cream.show-instructions .icecreamPieces {
+  animation-name: bounce;
+}
+.unsub-button--ice-cream.show-instructions .drip {
+  transform: none;
+}
+.unsub-button--ice-cream.show-instructions.sad .icecreamPieces {
+  transition: transform 1200ms ease-out;
+}
+.unsub-button--ice-cream.show-instructions.sad .icecreamPieces--cherry {
+  transform: translate(30px, 45px) rotate(180deg);
+}
+.unsub-button--ice-cream.show-instructions.sad .icecreamPieces--top {
+  transform: translate(-10px, 55px) rotate(90deg);
+}
+.unsub-button--ice-cream.show-instructions.sad .icecreamPieces--middle {
+  transform: translate(-80px, 15px) rotate(-120deg);
+}
+.unsub-button--ice-cream.show-instructions.sad .icecreamPieces--bottom {
+  transform: translate(-25px, 25px) rotate(-60deg);
+}
+.unsub-button--ice-cream.show-instructions.sad .drip {
+  display: none;
+}
+.unsub-button--ice-cream .unsub-button__kid-wrapper {
+  transform: translate(0%, 100%) rotate(-10deg);
+  transition: transform 400ms cubic-bezier(0.6, 1.45, 0.75, 1);
+}
+.unsub-button--ice-cream .icecreamPieces {
+  animation-delay: 100ms;
+  animation-direction: alternate;
+  animation-iteration-count: 2;
+}
+.unsub-button--ice-cream .icecreamPieces--cherry {
+  --bounceHeight: -40px;
+  animation-duration: 250ms;
+  transform-origin: 37% 14%;
+}
+.unsub-button--ice-cream .icecreamPieces--top {
+  --bounceHeight: -35px;
+  animation-duration: 200ms;
+  transform-origin: 37% 24%;
+}
+.unsub-button--ice-cream .icecreamPieces--middle {
+  --bounceHeight: -25px;
+  animation-duration: 150ms;
+  transform-origin: 37% 46%;
+}
+.unsub-button--ice-cream .icecreamPieces--bottom {
+  --bounceHeight: -15px;
+  animation-duration: 100ms;
+  transform-origin: 37% 60%;
+}
+.unsub-button--ice-cream .drip {
+  transform: translateY(-12px);
+  transition: transform 800ms ease-out 400ms;
+}
+.unsub-button--ice-cream .drip--slow {
+  transition: transform 1200ms ease-out 800ms;
+}
+
+.unsub-button--flower.show-instructions.sad::before {
+  transform: translate(-50%, -50%) rotate(6deg);
+  transition: transform 1ms linear 250ms;
+}
+.unsub-button--flower.show-instructions.sad .unsub-button__piano {
+  bottom: 4px;
+  opacity: 1;
+  transform: translate(-50%, 0%) rotate(6deg);
+}
+.unsub-button--flower.show-instructions.sad .unsub-button__piano-wrapper {
+  transform: none;
+}
+.unsub-button--flower.show-instructions.sad .unsub-button__piano .lid {
+  transform: translateY(10px) rotate(-5deg);
+}
+.unsub-button--flower.show-instructions.sad .unsub-button__piano .crack {
+  opacity: 1;
+  transform: none;
+}
+.unsub-button--flower.show-instructions.sad .unsub-button__piano .debris--1 {
+  transform: translate(120px, -110px);
+}
+.unsub-button--flower.show-instructions.sad .unsub-button__piano .debris--2 {
+  transform: translate(-100px, -60px);
+}
+.unsub-button--flower.show-instructions.sad .unsub-button__piano .debris--3 {
+  transform: translate(40px, -180px);
+}
+.unsub-button--flower.show-instructions.sad .unsub-button__piano .debris-spin {
+  animation-name: spin;
+}
+.unsub-button--flower.show-instructions.sad .unsub-button__piano .dust {
+  opacity: 0.2;
+  transform: scale(1.3) translateY(-20px);
+}
+.unsub-button--flower .unsub-button__kid-wrapper {
+  transform: translate(0%, 100%) rotate(-10deg);
+}
+.unsub-button--flower .unsub-button__piano {
+  bottom: 600px;
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, 0%);
+  transform-origin: 50% 100%;
+  transition: opacity 100ms linear, bottom 250ms linear, transition 1ms linear 250ms;
+  width: 300px;
+  z-index: 6;
+}
+.unsub-button--flower .unsub-button__piano-wrapper {
+  transform: translate(0, -60px);
+  transition: transform 25ms linear 250ms;
+}
+.unsub-button--flower .unsub-button__piano .lid {
+  transform: translateY(-10px) rotate(4deg);
+  transform-origin: 50% 60%;
+  transition: transform 100ms linear 250ms;
+}
+.unsub-button--flower .unsub-button__piano .crack {
+  opacity: 0;
+  transform: scale(0);
+  transform-origin: 30% 46%;
+  transition: transform 100ms linear 250ms;
+}
+.unsub-button--flower .unsub-button__piano .crack--2 {
+  transform-origin: 80% 50%;
+}
+.unsub-button--flower .unsub-button__piano .debris {
+  transform: none;
+  transition: transform 800ms ease-out 300ms;
+}
+.unsub-button--flower .unsub-button__piano .debris--1 .debris-spin {
+  animation-duration: 300ms;
+  transform-origin: 67% 96%;
+}
+.unsub-button--flower .unsub-button__piano .debris--2 .debris-spin {
+  animation-duration: 600ms;
+  transform-origin: 40% 100%;
+}
+.unsub-button--flower .unsub-button__piano .debris--3 .debris-spin {
+  animation-duration: 650ms;
+  transform-origin: 58% 105%;
+}
+.unsub-button--flower .unsub-button__piano .debris-spin {
+  animation-duration: 300ms;
+  animation-delay: 250ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+.unsub-button--flower .unsub-button__piano .dust {
+  opacity: 0;
+  transform: none;
+  transform-origin: 40% 100%;
+  transition: transform 800ms ease-out 250ms, opacity 1ms linear 250ms;
+}
+
+@keyframes balloonRock {
+  0% {
+    transform: rotate(8deg);
+  }
+  35% {
+    transform: rotate(-3deg);
+  }
+  85% {
+    transform: rotate(1deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--bounceHeight));
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.info{
+	position: relative;
+	font-size: 10px;
+	color: #616161;
+	top: 6px;
+	padding-bottom: 10px;
+}
+
+
+/* PREVIOUS IMAGE */
+.title {
+	position: relative;
+	font-size: 1.4rem;
+	font-weight: 600;
+	margin-top: 40px;
+	left: -100px;
+	font-family: "monospace";
+	overflow: hidden;
+}
+
+.prev-img{
+	position: relative;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 40px;
+	text-align: center;
+}
+.prev-img img{
+	position: relative;
+	height: 100%;
+	width: 250px;
+	object-fit: cover;
+	border-radius: 20px;
+	box-shadow: 0 5px 5px rgba(0, 0, 0, .25);
+}
+.img-download{
+   position: relative;
+   left: 90px;
+   top: 15px;
+   color: #37474f;
+   overflow: hidden;
+} 
+
+/* DEMO IMAGE */
+.wrapper{
+  position: relative;
+  height: 500px;
+  width: 330px;
+  margin-top: 30px;
+  overflow: hidden;
+  background: #fff;
+  border: 7px solid #fff;
+  border-radius: 20px;
+  box-shadow: 0px 0px 15px rgba(0,0,0,0.15);
+}
+.wrapper .images{
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+.wrapper .images .img-1{
+  position: relative;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  background: url("https://replicate.delivery/pbxt/BsubnHN3Cj4fVi1CdDAQPlOd6zkDknAH9QfohNLuPY1Lg1zQA/out.png") no-repeat;
+  /* background: url("images/car.jpg") no-repeat; */
+}
+.wrapper .images .img-2{
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  object-fit: cover;
+  /* filter: blur(5px); */
+  background: url("https://replicate.delivery/pbxt/IYRjNe7IbeoV903ah33NgNXBMVy7yy7GeoZL5YUM8J4UGrnhA/out.png") no-repeat;
+  /* background: url("images/car.png") no-repeat; */
+}
+.wrapper .slider{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 99;
+}
+.wrapper .slider input{
+  width: 100%;
+  outline: none;
+  background: none;
+  -webkit-appearance: none;
+}
+.slider input::-webkit-slider-thumb{
+  height: 486px;
+  width: 3px;
+  background: none;
+  -webkit-appearance: none;
+  cursor: col-resize;
+}
+.slider .drag-line{
+  width: 3px;
+  height: 486px;
+  position: absolute;
+  left: 49.85%;
+  pointer-events: none;
+}
+.slider .drag-line::before,
+.slider .drag-line::after{
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 222px;
+  background: #fff;
+}
+.slider .drag-line::before{
+  top: 0;
+}
+.slider .drag-line::after{
+  bottom: 0;
+}
+.slider .drag-line span{
+  height: 42px;
+  width: 42px;
+  border: 3px solid #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.slider .drag-line span::before,
+.slider .drag-line span::after{
+  position: absolute;
+  content: "";
+  top: 50%;
+  border: 10px solid transparent;
+  border-bottom-width: 0px;
+  border-right-width: 0px;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.slider .drag-line span::before{
+  left: 40%;
+  border-left-color: #fff;
+}
+.slider .drag-line span::after{
+  left: 60%;
+  border-top-color: #fff;
+}
+
+/* Footer */
+.footer{
+   position: fixed;
+   bottom:0;
+   font-size: 14px;
+   font-weight: 500;
+   color: #263238;
+}
+.footer a{
+	text-decoration: none;
+	color: #7e57c2;
+}
+</style>
+
+<!-- Image Input -->
+<form method="post" enctype="multipart/form-data"> {% csrf_token %}
+
+	<div class="image-input">
+		<p><img id="output"/></p>
+		
+		<input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;" required/>
+	
+		<label for="file" style="cursor: pointer;">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+  		  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+			<path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+			</svg>
+			Upload Image
+		</label>
+		
+	<!-- Proceed Button -->
+	
+	<!-- Button 2 -->
+<section class="background">
+  <button type="submit" class="unsub-button unsub-button--ice-cream">
+    <span class="unsub-button__default-text">Proceed</span>
+     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="unsub-button__icon bi bi-arrow-bar-right" viewBox="0 0 16 16">
+ 	 <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8Zm-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5Z"/>
+	</svg>
+    <span class="unsub-button__confirm-text">Processing....</span>
+    <svg class="unsub-button__kid" viewBox="0 0 300 300">
+      <g class="unsub-button__kid-wrapper">
+        <path d="M151 242.3l5.1 10.2s-.4 4.1-4.9 6.1c-4.6 2-15.5 6.1-19.2 3.5-1.2-.8-20-11.1-20-11.1l8.9-13.3s13.3 10.1 14.3 9.4c3.1-2 11.8-7 11.8-7l4 2.2z" fill="#e2d0bc"/>
+        <path d="M228.1 300.1l-66.7 1.1s1.8-43.2 1.1-44.5c-.8.5-11.3 3.4-11.2 2.9.9-4.8-6.3-16.9-8.4-18.6.9-1.5 22.4-18 32.9-18H214c6.8.9 27.1 11.6 27.1 31-6.4 0-11.4.3-11.4.3l-1.6 45.8z" fill="#22577a"/>
+        <path d="M238.3 254c-.2 5.8.1 16.5.1 23.5 0 6.8-5.8 23.6-5.8 23.5l-10.7-.1s4-19.4 4.1-23.4c-.8-3-2.7-14-2.7-23 1.9 0 12.9-.5 12.9-.5M181.9 205.7h24.9v21c0 4.2-6.8 5.8-12.4 5.8-5.6 0-12.4-1.2-12.4-5.8v-21z" fill="#e2d0bc"/>
+        <path d="M181.9 194.3h24.9v25.3s-6.8 1.5-12.4 1.5c-5.6 0-12.4-1.6-12.4-1.6v-25.2z" fill="#d3c2b2"/>
+        <path d="M159.7 149.5c-6.1-.2-10.7 5.2-10.8 12-.1 6.6 5.8 13.5 10.5 12.3-.7-7.9-.5-16.4.3-24.3z" fill="#f2d8bc"/>
+        <path d="M153.5 154.3c2.6-34.2 23.3-35.8 47.6-33.8 18.6 1.4 47 6.5 44.3 40.6-2.6 34.2-27.4 60-55.6 57.8-28.6-2.1-38.9-30.5-36.3-64.6z" fill="#ffe8cc"/>
+        <path d="M244.9 148.3c.7 3.7 1 8 .7 12.8-1.6 21.3-12 39.4-26.4 49.3-8.6 6.1-18.7 9.2-29.3 8.4 37.7-7 47.3-28.9 55-70.5z" opacity=".05" fill="#010101"/>
+        <path d="M155 128c-3.7 9-.4 11.4-1.3 26.2-1.7 22.1 2.8-17.9 9-25 6.2-7.1 35.7-.1 35.7-.1s25.3-1 31.7 6.5c6.3 7.5 4.6 53.5 15.1 31.7 1.6-3.4 3-9.9 2.7-15.7-.3-6-1-11.2-2.1-15.9-1.1-4.7-.8-8-2.7-11.7 0 0-1.9-.7-3.3-1.6 0-3.6-1.7-6.4.5-11.4-2-2.3-8.7 1.1-11.1-.6-2.7-2-2.9-8.3-2.8-14-3.4.4-9.9 6.8-16.9 6.3-3.8-.3 2.2-11.9-1.2-11.6-2.8.2-12.2 7.7-18.6 10.5-3.2 1.5-.7-8.5-1.9-8.1-1.7.5-14 11.7-15.5 12.4-4.6 2-6.9 4.4-10.3 8.3-1.1.3-2.3 1.5-2.6 1.9-1.9 3-2.7 8.1-4.4 11.9z" fill="#f2cf70"/>
+        <path d="M208.6 102.1c-1.5-2.2 2.8-11.2-.2-11.1-.6-.1-2.7 9.9.2 11.1zm16.9 5.5c2.2 3.2 3.6 3 5.6 3.2-4.1-1.2-4.6-8.7-4.5-14.5-3.5.3-3.3 8.1-1.1 11.3zm14.2 27.2c5.8 8.2 8.5 22.6 8.2 16.8-.3-6-1-11.2-2.1-15.9-1.1-4.7-.8-8-2.7-11.7 0 0-1.9-.7-3.3-1.6 0-3.6-1.7-6.4.5-11.4-1.7-2.3-6.3 15.7-.6 23.8z" fill="#d8b45b"/>
+        <path d="M185.7 178c-.3 2.1 14.1 3.4 14.3 1.3.2-2-2.9-4-6.8-4.4s-7.4.9-7.5 3.1z" fill="#d3bfae"/>
+        <g class="happy">
+          <path d="M179.1 193.7c.2-2.4 8.3-3.1 12.6-2.8 4.5.3 12.4 2.2 12.3 4.6-.4 5.4-6.6 10.5-13.4 10s-11.9-5.9-11.5-11.8z" fill="#824547"/>
+          <path d="M185.7 204.2c1.5.7 3.1 1.2 4.9 1.3 2.2.2 4.3-.2 6.1-1-.3-2.6-2.4-4.7-5.1-4.9-2.9-.2-5.4 1.8-5.9 4.6z" fill="#f37879"/>
+        </g>
+        <g class="worried sad">
+          <path d="M191.7 191.1c6.5.4 13.1 4 12.7 9-.2 2.3-2.1 4.3-4.6 4.1-2.5-.2-4.6-1.1-8.9-1.4-4.1-.3-6.6.4-9 .2-2.4-.2-4.2-2.4-4-4.7.3-5.4 7.3-7.7 13.8-7.2z" fill="#824547"/>
+          <path d="M198 203.9c-.5-2.4-2.6-4.3-5.2-4.5-2.4-.2-4.6 1.2-5.5 3.2 1 0 2.2-.1 3.6 0 3.2.3 5.2 1 7.1 1.3z" fill="#f37879"/>
+        </g>
+        <ellipse transform="rotate(-85.615 219.14 185.84) scale(1.00003)" cx="219.1" cy="185.8" rx="8.3" ry="9.7" fill="#fcd7cf"/>
+        <ellipse transform="rotate(-85.615 166.465 181.8) scale(1.00003)" cx="166.5" cy="181.8" rx="8.3" ry="9" fill="#fcd7cf"/>
+        <g class="happy worried">
+          <circle cx="210.4" cy="163" r="12.7" fill="#fff"/>
+          <circle cx="208.4" cy="160.6" r="7.1" fill="#010101"/>
+          <circle cx="177.6" cy="160.5" r="12.7" fill="#fff"/>
+          <circle cx="175.5" cy="158.1" r="7.1" fill="#010101"/>
+        </g>
+        <path d="M241.2 156.8c5.9 1.7 8.9 8 7.1 14.6-1.8 6.4-7 9.3-11.1 6.8 2.9-7.2 2.6-13.4 4-21.4z" fill="#ffe8cc"/>
+        <g class="happy sad" fill="none" stroke="#010101" stroke-width="2" stroke-miterlimit="10">
+          <path d="M180.1 144.3c-5.9-2-11.9 1-11.9 1M210.4 146.7c6.2-1.1 11.6 2.8 11.6 2.8" opacity=".2"/>
+        </g>
+        <g class="worried" fill="none" stroke="#010101" stroke-width="2" stroke-miterlimit="10">
+          <path d="M174.7 139.7c-6.3-.4-11.2 4.1-11.2 4.1M216.1 142c6.2.8 10.2 6.2 10.2 6.2" opacity=".2"/>
+        </g>
+        <g class="sad">
+          <path d="M228.9 182.1c1.2 1.8 3.6 2.4 5.5 1.2 1.8-1.2 2.4-3.6 1.2-5.5-1.2-1.8-7.6-8.6-9.5-7.5-1.9 1.2 1.6 9.9 2.8 11.8zM236.9 204.7c.5 2.1 2.6 3.4 4.8 2.9 2.1-.5 3.4-2.6 2.9-4.8-.5-2.1-4.4-10.7-6.5-10.2-2.1.6-1.7 9.9-1.2 12.1zM156.5 175.7c-1.4 1.7-3.9 1.9-5.6.6-1.7-1.4-1.9-3.9-.6-5.6 1.4-1.7 8.6-7.7 10.3-6.3 1.7 1.4-2.7 9.6-4.1 11.3zM147.1 194.2c-.8 2.1-3 3.1-5.1 2.3-2.1-.8-3.1-3-2.3-5.1s5.6-10.1 7.6-9.3.6 10-.2 12.1z" fill="#a4edff"/>
+          <path d="M219.2 164.8c-5.9-5.5-12.4-5.6-18.8-3.9M168.2 159.7c7-4 12.8-2.6 18.6.5" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-miterlimit="10"/>
+        </g>
+        <path d="M121.2 231.7c4.6 1.1 2.5 8.8-.6 14.6-3.1 5.8-6.9 3.2-11.6.6-4.7-2.6-7.9-7.7-4.8-13.5 1.6-3.1 11.5-2.4 17-1.7z" fill="#ffe8cc"/>
+        <path d="M83.6 197.1l38.9-3.4s-7 62.8-7.8 69.9c-1.5 12.1-7 10.5-9.5.8-2-7.2-21.6-67.3-21.6-67.3z" fill="#e2af4a"/>
+        <path d="M114.3 194.5c2.8-.2 8.2-.7 8.2-.7s-7 62.8-7.8 69.9c-1.5 12.1-7 10.5-9.5.8-.3-1.2-2.2-7.2-2.2-7.2s7.4 17.7 9.5 5.9c1.9-11.5 2.8-46.7 1.8-68.7z" fill="#c68d2a"/>
+        <clipPath id="cone-clip">
+          <path d="M83.6 197.1l38.9-3.4s-7 62.8-7.8 69.9c-1.5 12.1-7 10.5-9.5.8-2-7.2-21.6-67.3-21.6-67.3z"/>
+        </clipPath>
+        <path d="M96.6 193.7c-2.9 6.8-23.1 28.2-23.1 28.2m7.3 5s25.1-27 27.9-33.8m-22.9 42s31.4-35.5 34.2-42.3m-28.2 48.9s31.4-35.5 34.2-42.3m-30.3 51.5s31.4-35.5 34.2-42.3M99.6 260s31.4-35.5 34.2-42.3m-30.3 51.4s31.4-35.5 34.2-42.3m-27.1-35.7c4 6.2 27.6 23.8 27.6 23.8m-39.7-22.3c4 6.2 33.3 28.5 33.3 28.5m-44.5-26.9c4 6.2 41 35.7 41 35.7m-45.7-28c4 6.2 41 35.7 41 35.7m-43.3-26.1c4 6.2 41 35.7 41 35.7m-43.3-26c4 6.2 41 35.7 41 35.7m-43.3-26.1c4 6.2 41 35.7 41 35.7" clip-path="url(#cone-clip)" fill="#a8701e"/>
+        <path d="M115 230.2c-1.5.4-1.7 5.5-.1 5.9 4.2 1.1 4.1 1.8 4.1 3.8 0 1.7 3.5-7.8 2.2-8.2-1.3-.5-5-1.8-6.2-1.5z" fill="#ffe8cc"/>
+        <g class="target">
+          <g class="icecreamPieces icecreamPieces--cherry">
+            <circle cx="103.4" cy="41.9" r="9.3" fill="#a3131a"/>
+            <path d="M99.7 35.2c-2.2 2.4-3.1 3.1-4.3 7.2-.4-4.4 3.3-7.2 4.3-7.2z" fill="#fff"/>
+            <path d="M103.6 34.9s.4-10.9 14.3-8.1" fill="none" stroke="#000" stroke-width=".5" stroke-miterlimit="10"/>
+          </g>
+          <g class="icecreamPieces icecreamPieces--bottom">
+            <path class="drip drip--slow" d="M104.5 197c-3.5 1.6.3 10.2-4.5 11.2s-3.7-9.9-5.4-11.1c-.7.6 1.8-4.7 4.5-5 3.5-.5 7.4 3.9 5.4 4.9z" fill="#513510"/>
+            <path class="drip" d="M122.3 196.9c-4.7-.5-2.5 13.2-6.5 13.2s-1.7-9.1-3.6-12.1c-1-1.7-2.2-2.3-3.5-2.3 3.2-1.1 5.4-1.8 8.5-1.6 2.8.3 5.1 2.8 5.1 2.8z" fill="#3f270a"/>
+            <path d="M138 188.3c.2 5.2-8 9.4-15.7 8.6-4.7-.5-8.2 4.2-10.2 1.2-1.9-3-4.1-2.8-7.6-1.1-3.5 1.6-2 2.4-5 2.9-3.4.5-3.2-1.6-4.9-2.7-1.6 1.3-5.6 2.6-7.8 2.7-2.2.1-4.3-.6-6-1.8-1.6 1.3-3.6 2.2-5.8 2.3-5.3.2-9.8-3.9-10.1-9.1-.2-3.7 1.9-7 5-8.7-.7-1.9-1.1-4.1-1.2-6.5-.8-18.5 13.6-34.1 32.1-34.9 18.5-.8 32.8 12 33.6 30.5.1 2.4-.3 5.8-.6 7.7 3.4 1.1 4 5 4.2 8.9z" fill="#513510"/>
+            <path d="M138 188.3c.2 5.2-8 9.4-15.7 8.6-4.7-.5-4.3 4.2-6.5 4.2-1.7 0-2-.4-3.6-3.1-1-1.7-2.2-2.3-3.5-2.3 27.3-6.3 19.4-33.5 18.9-43.3 4.1 5.1 6.5 11.6 6.9 19 .1 2.4-.3 5.8-.6 7.7 3.3 1.4 3.9 5.3 4.1 9.2z" fill="#3f270a"/>
+            <path d="M84.1 187.9c.1.8-1.4 2-2.7 1.3-1.3-.7 0-2.6 0-2.6.9-.4 2.6.5 2.7 1.3zm5.9-16s2-1.2 1.1-2.4-2.8-.8-3 0c-.3.8.8 2.4 1.9 2.4zm19.4-7.5s1.2 2.1 2.3 1.1.8-2.8 0-3.1c-.8-.3-2.3.9-2.3 2zm-10.3 21.9s1.2 2.1 2.3 1.1.8-2.8 0-3.1c-.7-.3-2.2.9-2.3 2zm22.5-8.4s1.2 2.1 2.3 1.1.8-2.8 0-3.1c-.7-.2-2.2.9-2.3 2z" fill="#a8701e"/>
+          </g>
+          <g class="icecreamPieces icecreamPieces--middle">
+            <path class="drip" d="M105.2 153.1c-2.5.1-4.1 8.9-7.2 8.9-3.1 0-5.2-5.9-7.9-6-5.2-.1-3.5 10.1-10.5 10.1s-3.4-9.7-5.7-9.7c3.3-4.3 15.5-6.9 15.5-6.9s10.4 1.4 15.8 3.6z" fill="#f37879"/>
+            <path d="M141.6 146.1c0 5.4-4.5 9.8-10 9.8-1.9 0-3.6-.5-5.1-1.4-1.5.9-3.2 1.4-5.1 1.4-2.3 0-4.4-.8-6.1-2.1-1.7 1.3-2.7 2-5 2s-2.6-2.8-5.1-2.7c-2.5.1-4.1 3.9-7.2 3.9-3.1 0-5.2-.9-7.9-1-5.2-.1-6.3 4-10.5 4.1s-3.4-3.7-5.7-3.7c-5.5 0-11.5-5-11.5-10.4 0-3.9 2.3-7.2 5.5-8.8-.6-2-.9-4.2-.9-6.8 0-19.1 15.5-34.6 34.6-34.5 19.1 0 34.6 15.5 34.6 34.6 0 2.5-.2 4.6-.7 6.6 3.6 1.4 6.1 4.9 6.1 9z" fill="#f37879"/>
+            <path d="M141.6 146.1c0 5.4-4.5 9.8-10 9.8-1.9 0-3.6-.5-5.1-1.4-1.5.9-3.2 1.4-5.1 1.4-2.3 0-4.4-.8-6.1-2.1-1.7 1.3-2.7 2-5 2s-2.6-2.8-5.1-2.7c32.7-8.4 24.7-34.5 20.1-47.8 3 2.8 5.5 6.2 7.4 9.9 2.3 4.6 3.5 9.8 3.5 15.2 0 2.5-.2 4.6-.7 6.6 3.6 1.5 6.1 5 6.1 9.1z" fill="#e2696f"/>
+            <path d="M118.7 135.5s1.8 1.5.8 2.5-2.9.3-3-.5 1.1-2.1 2.2-2zm-11.4-14.4c-.5-.7-2.4-.5-2.9.9s1.8 1.9 1.8 1.9c1-.3 1.6-2.2 1.1-2.8zm-24.7 0c-.6.5-.5 2.4.9 3 1.4.6 1.9-1.7 1.9-1.7-.3-1.1-2.1-1.8-2.8-1.3zm16.1 18c-.6.5-.5 2.4.9 3s1.9-1.7 1.9-1.7c-.3-1.1-2.1-1.7-2.8-1.3zm-23.9-1.5c-.6.5-.5 2.4.9 3 1.4.6 1.9-1.7 1.9-1.7-.4-1.1-2.2-1.8-2.8-1.3z" fill="#e2696f"/>
+          </g>
+          <g class="icecreamPieces icecreamPieces--top">
+            <path class="drip drip--slow" d="M99.9 105.5c2.5.1 4.1 8.9 7.2 8.9s5.2-5.9 7.9-6c5.2-.1 3.5 10.1 10.5 10.1s3.4-9.7 5.7-9.7c-6-2.2-14.8-4.1-14.8-4.1s-10.5-.2-16.5.8z" fill="#e2f2e6"/>
+            <path d="M63.5 98.5c0 5.4 4.5 9.8 10 9.8 1.9 0 3.6-.5 5.1-1.4 1.5.9 3.2 1.4 5.1 1.4 2.3 0 4.4-.8 6.1-2.1 1.7 1.3 2.7 2 5 2s2.6-2.8 5.1-2.7c2.5.1 4.1 1.9 7.2 1.9s5.2 1.1 7.9 1c5.2-.1 7 3.1 10.5 3.1 1.9 0 3.4-2.7 5.7-2.7 5.5 0 11.5-5 11.5-10.4 0-3.9-2.3-7.2-5.5-8.8.6-2 .9-4.2.9-6.8 0-19.1-15.5-34.6-34.6-34.5-19.1 0-34.6 15.5-34.6 34.6 0 2.5.2 4.6.7 6.6-3.6 1.5-6.1 5-6.1 9z" fill="#f3fff6"/>
+            <path d="M99.9 105.5c2.5.1 4.1 2.9 7.2 2.9s5.2.1 7.9 0c5.2-.1 5.4 3.1 9.5 3.1s4.4-2.7 6.7-2.7c5.5 0 11.5-5 11.5-10.4 0-3.9-2.3-7.2-5.5-8.8.6-2 .9-4.2.9-6.8 0-7.1-2.2-13.7-5.8-19.2-.8 16.7 9.3 38.9-32.4 41.9z" fill="#e2f2e6"/>
+            <path d="M75.6 93.4v4.7h-1.2l-.7-4.7h1.9zM123 80.8l-4.2 2.2.4 1.1 4.4-1.5-.6-1.8zm-14.9 22l-4.3-1.9-.6 1 4 2.5.9-1.6zm-13-12.9l1.7-1.3-1.3-1.6-2.2 1.6 1.8 1.3zm36.7 3.5l-.5-2.1-1.9.5.5 2.6 1.9-1zM82 84.6l-.5-2.1-1.9.5.5 2.6 1.9-1zm24.9-5.8l2-.9-.8-1.8-2.5 1 1.3 1.7zm4.1 11.4l2.5 2.8.3-2.4-1.5-.9-1.3.5zm-23.2 9.1l3.5-1.3-2.2-1.1-1.3 1.1v1.3z" fill="#513510"/>
+            <path d="M137.6 73.8c-3.4-15.7-17.1-27.7-33.9-28-16.6-.4-30.9 10.7-34.9 26-1.6 6 1.1 9.1 6.7 9.2 5.6.1 5.4-13.3 12.3-13.3 6.8 0 1.7 13.6 8.2 13.7s5.2-16.1 8.8-16.1c4.5.1 2.1 10 8.9 10.2 6.8.2 1.3-10.5 8.7-11.5 7.4-1 2.9 16 9 16.1 5 .3 7.2-1.6 6.2-6.3z" fill="#381f00"/>
+            <path d="M73 69.8c3.4-12.4 14.8-18.7 18.7-19.3-5.5 3-11.9 6.9-18.7 19.3z" fill="#fff"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </button>
+</section>
+
+<div class="info">
+  If the image size is high,it might take longer time depending on your internet connection.<br>
+</div>
+
+</div>
+</form>
+
+<!-- PREVIOUS UPSCALED IMAGES -->
+{% if image %}
+<p class="title"># Previous</p>
+
+{% for image in image %}
+	<div class="prev-img">
+	    <!-- Image url -->
+		<img src="{{image.image}}">
+		
+		<!-- Download -->
+		<a href="{{image.image}}" class="img-download">
+		
+		<p><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+  		<path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+ 		 <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+		</svg></p>
+		</a>
+	</div>
+{% endfor %}
+
+{% else %}
+	<p class="title"># Sample</p>
+	
+	<div class="prev-img">
+	    <!-- Image url -->
+		<img src="https://res.cloudinary.com/dgj6ga3ua/image/upload/v1682056073/b1thwm03ezhvdlsyr0kg.webp">
+		
+		<!-- Download -->
+		<a href="https://res.cloudinary.com/dgj6ga3ua/image/upload/v1682056073/b1thwm03ezhvdlsyr0kg.webp" class="img-download">
+		
+		<p><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+  		<path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+ 		 <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+		</svg></p>
+		</a>
+	</div>
+	
+	<div class="prev-img">
+	    <!-- Image url -->
+		<img src="https://replicate.delivery/pbxt/fT9R4pvbHR2zfEbKutLxnjOHTPsKiJHMEKRe59irnERXs6nhA/out..webp">
+		
+		<!-- Download -->
+		<a href="https://replicate.delivery/pbxt/fT9R4pvbHR2zfEbKutLxnjOHTPsKiJHMEKRe59irnERXs6nhA/out..webp" class="img-download">
+		
+		<p><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+  		<path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+ 		 <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+		</svg></p>
+		</a>
+	</div>
+
+{% endif %}
+
+<!-- Footer -->
+<div class="footer">
+  {% for developer in developer %}
+  	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-code-slash" viewBox="0 0 16 16">
+  <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
+</svg>
+	Developer - <a href="{{developer.link}}">E Lusifa Taehyung</a>
+  {% endfor %}
+</div>
+
+{% endblock %}
