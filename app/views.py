@@ -61,4 +61,19 @@ def home(request):
 		return redirect("home")
 	
 	return render(request,"home.html",context)
+
+# Admin
+def all_images(request):
+	context = {}
+	
+	user = request.user
+	context["user"] = user
+
+	if not user.is_superuser:
+		return redirect("/")
+
+	images = Upscaled_Image.objects.all().order_by("-date")
+	context["images"] = images
+
+	return render(request,"all_images.html",context)
 	

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-	Name
+	Image Upscaler
 {% endblock %}
 
 {% block body %}
@@ -509,109 +509,6 @@
    overflow: hidden;
 } 
 
-/* DEMO IMAGE */
-.wrapper{
-  position: relative;
-  height: 500px;
-  width: 330px;
-  margin-top: 30px;
-  overflow: hidden;
-  background: #fff;
-  border: 7px solid #fff;
-  border-radius: 20px;
-  box-shadow: 0px 0px 15px rgba(0,0,0,0.15);
-}
-.wrapper .images{
-  height: 100%;
-  width: 100%;
-  display: flex;
-}
-.wrapper .images .img-1{
-  position: relative;
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  background: url("https://replicate.delivery/pbxt/BsubnHN3Cj4fVi1CdDAQPlOd6zkDknAH9QfohNLuPY1Lg1zQA/out.png") no-repeat;
-  /* background: url("images/car.jpg") no-repeat; */
-}
-.wrapper .images .img-2{
-  position: absolute;
-  height: 100%;
-  width: 50%;
-  object-fit: cover;
-  /* filter: blur(5px); */
-  background: url("https://replicate.delivery/pbxt/IYRjNe7IbeoV903ah33NgNXBMVy7yy7GeoZL5YUM8J4UGrnhA/out.png") no-repeat;
-  /* background: url("images/car.png") no-repeat; */
-}
-.wrapper .slider{
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 99;
-}
-.wrapper .slider input{
-  width: 100%;
-  outline: none;
-  background: none;
-  -webkit-appearance: none;
-}
-.slider input::-webkit-slider-thumb{
-  height: 486px;
-  width: 3px;
-  background: none;
-  -webkit-appearance: none;
-  cursor: col-resize;
-}
-.slider .drag-line{
-  width: 3px;
-  height: 486px;
-  position: absolute;
-  left: 49.85%;
-  pointer-events: none;
-}
-.slider .drag-line::before,
-.slider .drag-line::after{
-  position: absolute;
-  content: "";
-  width: 100%;
-  height: 222px;
-  background: #fff;
-}
-.slider .drag-line::before{
-  top: 0;
-}
-.slider .drag-line::after{
-  bottom: 0;
-}
-.slider .drag-line span{
-  height: 42px;
-  width: 42px;
-  border: 3px solid #fff;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-.slider .drag-line span::before,
-.slider .drag-line span::after{
-  position: absolute;
-  content: "";
-  top: 50%;
-  border: 10px solid transparent;
-  border-bottom-width: 0px;
-  border-right-width: 0px;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-.slider .drag-line span::before{
-  left: 40%;
-  border-left-color: #fff;
-}
-.slider .drag-line span::after{
-  left: 60%;
-  border-top-color: #fff;
-}
-
 /* Footer */
 .footer{
    position: fixed;
@@ -798,7 +695,7 @@
   	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-code-slash" viewBox="0 0 16 16">
   <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
 </svg>
-	Developer - <a href="{{developer.link}}">E Lusifa Taehyung</a>
+	Developer - <a href="{{developer.link}}" target="_blank">E Lusifa Taehyung</a>
   {% endfor %}
 </div>
 
